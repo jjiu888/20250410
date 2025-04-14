@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sketch</title>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script src="libraries/p5.min.js"></script>
+    <script src="libraries/p5.sound.min.js"></script>
+  </head>
+
+  <body>
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 10px;">
+      <button style="width: 100px; height: 100px; background-color: lightblue;" onclick="showIframe('https://www.tku.edu.tw/')">首頁</button>
+      <div style="display: flex; flex-direction: column; gap: 5px;">
+        <button style="width: 100px; height: 100px; background-color: lightblue;" onclick="toggleWorksMenu()">作品集</button>
+        <div id="worksMenu" style="display: none; flex-direction: column; gap: 5px;">
+          <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://hackmd.io/@jjjjiu/SyUqHD-51g')">第一周作品</button>
+          <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://cfchengit.github.io/20250225/')">第二周作品</button>
+          <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://jjiu888.github.io/20250304/')">第三周作品</button>
+          <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://jjiu888.github.io/20250318/')">第四周作品</button>
+          <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://jjiu888.github.io/20250325/')">第五周作品</button>
+          <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://example.com/midterm-project')">期中作品</button>
+        </div>
+        <div id="iframeContainer" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; height: 80%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000; border-radius: 10px;">
+          <iframe id="iframeContent" style="width: 100%; height: 100%; border: none; background-color: transparent;"></iframe>
+          <button onclick="closeIframe()" style="position: absolute; top: 10px; right: 10px; background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">關閉</button>
+        </div>
+      </div>
+      <button style="width: 100px; height: 100px; background-color: lightblue;" onclick="toggleNotesMenu()">筆記</button>
+      <div id="notesMenu" style="display: none; flex-direction: column; gap: 5px;">
+        <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://hackmd.io/@jjjjiu/S1OyFSK51g')">第一周筆記</button>
+        <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://hackmd.io/@jjjjiu/rkMkIwWc1l')">第二周筆記</button>
+        <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://hackmd.io/@jjjjiu/S1fSMKGs1x')">第三周筆記</button>
+        <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://hackmd.io/@jjjjiu/rJXqNgr2Jg')">第四周筆記</button>
+        <button style="width: 100px; height: 50px; background-color: lightblue;" onclick="showIframe('https://example.com/midterm-note')">期中作品筆記</button>
+      </div>
+      <button style="width: 100px; height: 100px; background-color: lightblue;" onclick="location.href='#about'">自我介紹</button>
+      <button style="width: 100px; height: 100px; background-color: lightblue;" onclick="startQuiz()">測驗</button>
+      <button style="width: 100px; height: 100px; background-color: lightblue;" onclick="showIframe('https://example.com/tutorial-video')">教學影片</button>
+    </div>
+    <div id="quizContainer" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 200px; background-color: white; z-index: 1000; border-radius: 10px; padding: 20px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);">
+      <div id="quizQuestion" style="font-size: 24px; margin-bottom: 20px;"></div>
+      <input id="quizAnswer" type="text" style="width: 100%; padding: 10px; font-size: 18px; margin-bottom: 20px;">
+      <button onclick="checkAnswer()" style="width: 100%; padding: 10px; background-color: lightblue; font-size: 18px; cursor: pointer;">提交答案</button>
+    </div>
+    <script src="sketch.js"></script>
+    <script>
+      function toggleWorksMenu() {
+        const menu = document.getElementById('worksMenu');
+        menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+      }
+
+      function showIframe(url) {
+        const iframeContainer = document.getElementById('iframeContainer');
+        const iframeContent = document.getElementById('iframeContent');
+        iframeContent.src = url;
+        iframeContainer.style.display = 'block';
+      }
+
+      function closeIframe() {
+        const iframeContainer = document.getElementById('iframeContainer');
+        const iframeContent = document.getElementById('iframeContent');
+        iframeContent.src = '';
+        iframeContainer.style.display = 'none';
+      }
+
+      function toggleNotesMenu() {
+        const menu = document.getElementById('notesMenu');
+        menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+      }
+
+      function startQuiz() {
+        const quizContainer = document.getElementById('quizContainer');
+        const quizQuestion = document.getElementById('quizQuestion');
+        const quizAnswer = document.getElementById('quizAnswer');
+
+        generateQuestion();
+        quizAnswer.value = '';
+        quizContainer.style.display = 'block';
+      }
+
+      function generateQuestion() {
+        const quizQuestion = document.getElementById('quizQuestion');
+
+        // 隨機生成十位數內的加減法題目
+        const num1 = Math.floor(Math.random() * 10);
+        const num2 = Math.floor(Math.random() * 10);
+        const isAddition = Math.random() > 0.5;
+
+        if (isAddition) {
+          quizQuestion.textContent = `${num1} + ${num2} = ?`;
+          correctAnswer = num1 + num2;
+        } else {
+          quizQuestion.textContent = `${num1} - ${num2} = ?`;
+          correctAnswer = num1 - num2;
+        }
+      }
+
+      function checkAnswer() {
+        const quizAnswer = document.getElementById('quizAnswer').value;
+        if (parseInt(quizAnswer) === correctAnswer) {
+          alert('答對了！下一題！');
+          generateQuestion(); // 自動生成下一題
+          document.getElementById('quizAnswer').value = ''; // 清空答案輸入框
+        } else {
+          alert('答錯了，再試一次！');
+        }
+      }
+
+      // 初始化畫布
+      function setup() {
+        createCanvas(windowWidth, windowHeight);
+        noStroke();
+      }
+
+      // 繪製背景和星星
+      function draw() {
+        background(230, 230, 250); // 淡紫色背景
+        fill(255, 182, 193); // 淡粉色星星
+
+        let starSize = map(mouseX, 0, width, 20, 50); // 根據滑鼠位置計算星星大小
+        let cols = 5; // 每行星星數量
+        let rows = 5; // 每列星星數量
+        let spacingX = width / cols; // 水平間距
+        let spacingY = height / rows; // 垂直間距
+
+        for (let i = 0; i < cols; i++) {
+          for (let j = 0; j < rows; j++) {
+            let x = spacingX * i + spacingX / 2;
+            let y = spacingY * j + spacingY / 2;
+            drawStar(x, y, starSize / 2, starSize / 4, 5); // 繪製星星
+          }
+        }
+      }
+
+      // 繪製星星的函數
+      function drawStar(x, y, radius1, radius2, npoints) {
+        let angle = TWO_PI / npoints;
+        let halfAngle = angle / 2.0;
+        beginShape();
+        for (let a = 0; a < TWO_PI; a += angle) {
+          let sx = x + cos(a) * radius1;
+          let sy = y + sin(a) * radius1;
+          vertex(sx, sy);
+          sx = x + cos(a + halfAngle) * radius2;
+          sy = y + sin(a + halfAngle) * radius2;
+          vertex(sx, sy);
+        }
+        endShape(CLOSE);
+      }
+    </script>
+  </body>
+</html>
